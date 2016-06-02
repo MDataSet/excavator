@@ -1,0 +1,14 @@
+== Contributing
+
+==== Build
+
+. `git clone https://github.com/MDataSet/excavator.git`
+. 使用IDE导入Maven工程，各组件都是独立Maven工程
+
+==== Submit
+
+. 提交前请确保:
+
+  已完成变更代码的单元测试
+  代码风格检查（mvn scalastyle:check）通过：0 errors 0 warnings
+

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.ecfront</groupId>
+        <artifactId>ez-parent</artifactId>
+        <version>0.1.8</version>
+    </parent>
+
+    <groupId>com.mdataset</groupId>
+    <artifactId>excavator</artifactId>
+    <name>Data Excavator POM</name>
+    <description>数据挖掘机 POM</description>
+    <url>https://github.com/MDataSet/excavator</url>
+    <packaging>pom</packaging>
+    <version>1.0.0</version>
+
+    <scm>
+        <connection>scm:git:git@github.com:MDataSet/excavator.git</connection>
+        <developerConnection>scm:git:git@github.com:MDataSet/excavator.git</developerConnection>
+        <url>git@github.com:MDataSet/excavator.git</url>
+    </scm>
+
+    <properties>
+        <common.version>0.6.8</common.version>
+        <httpclient.version>4.5.2</httpclient.version>
+        <jsoup.version>1.9.2</jsoup.version>
+        <rhino.version>1.7.7.1</rhino.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.ecfront</groupId>
+            <artifactId>ez-common</artifactId>
+            <version>${common.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mozilla</groupId>
+            <artifactId>rhino</artifactId>
+            <version>${rhino.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>oss-snapshots-repo</id>
+            <name>Sonatype OSS Maven Repository</name>
+            <url>https://oss.sonatype.org/content/groups/public</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>Sonatype OSS Snapshot Repository</id>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+    </repositories>
+
+</project>

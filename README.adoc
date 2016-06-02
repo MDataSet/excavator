@@ -1,0 +1,18 @@
+= MDS Excavator(微数据平台数据采集工具)
+
+image::https://img.shields.io/travis/MDataSet/excavator.svg[link="https://travis-ci.org/MDataSet/excavator"]
+
+== 特点
+
+. 使用简单：非常的简介的编程接口
+. 类库化：方便集成到第三方系统
+. 功能全面：支持主流的HTTP抓取操作
+. 反机器识别：支持自定义User-Agent、动态代理、速度控制等
+
+== 使用
+
+// TODO
+
+== License
+
+Under version 2.0 of the http://www.apache.org/licenses/LICENSE-2.0[Apache License].
