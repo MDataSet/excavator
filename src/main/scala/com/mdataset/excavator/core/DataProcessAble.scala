@@ -3,13 +3,51 @@ package com.mdataset.excavator.core
 import com.ecfront.common.JsonHelper
 import com.fasterxml.jackson.databind.JsonNode
 import org.jsoup.nodes.Element
-import org.mozilla.javascript._
+import org.mozilla.javascript.{UniqueTag, _}
 
 import scala.collection.JavaConversions._
 
-class Dom extends EObject {
+trait DataProcessAble extends ENodeDef {
 
-  protected var element: Element = _
+  def setText(name: String, cssQuery: String): this.type = {
+    data += name -> element.select(cssQuery).text()
+    this
+  }
+
+  def setText(name: String, cssQueryFun: Element => String): this.type = {
+    val text = cssQueryFun(element)
+    data += name -> text
+    this
+  }
+
+  def setJson(name: String, jsName: String): this.type = {
+    val value = getValueForScript(name)
+    if (value != null) {
+      try {
+        val json = JsonHelper.toJson(value.asInstanceOf[String])
+        data += name -> json
+      } catch {
+        case e: Throwable =>
+          logger.warn("Parse json error.", e)
+      }
+    }
+    this
+  }
+
+  def setJson(name: String, jsName: String, jsonFilterFun: JsonNode => JsonNode): this.type = {
+    val value = getValueForScript(name)
+    if (value != null) {
+      try {
+        val json = jsonFilterFun(JsonHelper.toJson(value.asInstanceOf[String]))
+        data += name -> json
+      } catch {
+        case e: Throwable =>
+          logger.warn("Parse json error.", e)
+      }
+    }
+    this
+  }
+
   private var jsContext: Context = _
   private var jsScope: ScriptableObject = _
 
@@ -37,60 +75,7 @@ class Dom extends EObject {
     }
   }
 
-  def init(parent: EObject, element: Element): this.type = {
-    this.parent = parent
-    this.element = element
-    this
-  }
-
-  def doms(nodeName: String, cssQuery: String,fun: Dom => Unit): Unit = {
-    this.childNodeName = nodeName
-    element.select(cssQuery).par.foreach {
-      ele =>
-        fun(new Dom().init(this, ele))
-    }
-  }
-
-  def setText(name: String, cssQuery: String): this.type = {
-    nodeData += name -> element.select(cssQuery).text()
-    this
-  }
-
-  def setText(name: String, cssQueryFun: Element => String): this.type = {
-    val text = cssQueryFun(element)
-    nodeData += name -> text
-    this
-  }
-
-  def setJson(name: String, jsName: String): this.type = {
-    val value = getValueForScript(name)
-    if (value != null) {
-      try {
-        val json = JsonHelper.toJson(value.asInstanceOf[String])
-        nodeData += name -> json
-      } catch {
-        case e: Throwable =>
-          logger.warn("Parse json error.", e)
-      }
-    }
-    this
-  }
-
-  def setJson(name: String, jsName: String, jsonFilterFun: JsonNode => JsonNode): this.type = {
-    val value = getValueForScript(name)
-    if (value != null) {
-      try {
-        val json = jsonFilterFun(JsonHelper.toJson(value.asInstanceOf[String]))
-        nodeData += name -> json
-      } catch {
-        case e: Throwable =>
-          logger.warn("Parse json error.", e)
-      }
-    }
-    this
-  }
-
-  private def getValueForScript(name: String): String = {
+  protected def getValueForScript(name: String): String = {
     jsDataInit()
     val value = jsScope.get(name, jsScope)
     value match {

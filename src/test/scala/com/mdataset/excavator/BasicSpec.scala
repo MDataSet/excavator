@@ -2,6 +2,7 @@ package com.mdataset.excavator
 
 import java.util.concurrent.CountDownLatch
 
+import com.mdataset.excavator.core.ENode
 import com.mdataset.excavator.helper.Charset
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.scalatest.{BeforeAndAfter, FunSuite}
@@ -10,7 +11,7 @@ class BasicSpec extends FunSuite with BeforeAndAfter with LazyLogging {
 
   test("AutoHome Test") {
 
-    Excavator.contentType("text/html; charset=gb2312").charset(Charset.GB2312)
+    Excavator.start().contentType("text/html; charset=gb2312").charset(Charset.GB2312)
       .htmls("root", ('A' to 'Z').map("http://www.autohome.com.cn/grade/carhtml/" + _ + ".html"))
       .foreach {
         _.doms("brand", "dl",
