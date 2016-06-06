@@ -6,30 +6,15 @@ import com.fasterxml.jackson.databind.node.ObjectNode
 
 class ENode extends ENodeDef with HtmlVisitAble with DomVisitAble with DataProcessAble {
 
-  override protected def packageFromParent(currObject: ENode.this.type, childJson: ObjectNode): JsonNode = {
-    val currJson = JsonHelper.createObjectNode()
-    if (childJson != null) {
-      currJson.set(currObject.childNodeName, childJson)
-    }
-    currObject.data.foreach {
-      item =>
-        item._2 match {
-          case value: String => currJson.put(item._1, value)
-          case value: Int => currJson.put(item._1, value)
-          case value: Long => currJson.put(item._1, value)
-          case value: Float => currJson.put(item._1, value)
-          case value: Double => currJson.put(item._1, value)
-          case value: Boolean => currJson.put(item._1, value)
-          case value: Short => currJson.put(item._1, value)
-          case value: JsonNode => currJson.set(item._1, value)
-          case value: java.math.BigDecimal => currJson.put(item._1, value)
-          case _ => logger.warn(s"The type [${item._2.getClass.getName}] not support")
-        }
-    }
-    if (currObject.parent != null) {
-      packageFromParent(currObject.parent.asInstanceOf[ENode], currJson)
-    } else {
-      currJson
+
+  def go(nodeName: String, urlOrCssQuery: Any, fun: this.type => Unit): Unit = {
+    urlOrCssQuery match {
+      case urls: Seq[String] => htmls(nodeName, urls, fun)
+      case s: String => s.toLowerCase match {
+        case ss if ss.startsWith("http://") || ss.startsWith("https://") => htmls(nodeName, s, fun)
+        case _ => doms(nodeName, s, fun)
+      }
+      case _ => logger.error("Only use url or css query.")
     }
   }
 

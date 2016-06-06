@@ -9,18 +9,18 @@ import scala.collection.JavaConversions._
 
 trait DataProcessAble extends ENodeDef {
 
-  def setText(name: String, cssQuery: String): this.type = {
+  def text(name: String, cssQuery: String): this.type = {
     data += name -> element.select(cssQuery).text()
     this
   }
 
-  def setText(name: String, cssQueryFun: Element => String): this.type = {
+  def text(name: String, cssQueryFun: Element => String): this.type = {
     val text = cssQueryFun(element)
     data += name -> text
     this
   }
 
-  def setJson(name: String, jsName: String): this.type = {
+  def json(name: String, jsName: String): this.type = {
     val value = getValueForScript(name)
     if (value != null) {
       try {
@@ -34,7 +34,7 @@ trait DataProcessAble extends ENodeDef {
     this
   }
 
-  def setJson(name: String, jsName: String, jsonFilterFun: JsonNode => JsonNode): this.type = {
+  def json(name: String, jsName: String, jsonFilterFun: JsonNode => JsonNode): this.type = {
     val value = getValueForScript(name)
     if (value != null) {
       try {

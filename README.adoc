@@ -1,6 +1,6 @@
 = MDS Excavator(微数据平台数据采集工具)
 
-image::https://img.shields.io/travis/MDataSet/excavator.svg[link="https://travis-ci.org/MDataSet/excavator"]
+image::https://img.shields.io/travis/MDataset/excavator.svg[link="https://travis-ci.org/MDataset/excavator"]
 
 == 特点
 

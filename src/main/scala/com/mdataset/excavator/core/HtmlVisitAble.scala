@@ -1,12 +1,10 @@
 package com.mdataset.excavator.core
 
 import com.mdataset.excavator.Excavator
-import com.mdataset.excavator.helper.Method._
+import com.mdataset.excavator.helper.Method.Method
 import com.mdataset.excavator.helper.{Method, _}
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.jsoup.Jsoup
-
-import scala.collection.parallel.ParSeq
 
 trait HtmlVisitAble extends ENodeDef {
 
@@ -17,33 +15,47 @@ trait HtmlVisitAble extends ENodeDef {
     this
   }
 
-  private implicit var requestContentType = "text/html; charset=utf-8"
+  private var requestContentType = "text/html; charset=utf-8"
 
   def contentType(contentType: String): this.type = {
     requestContentType = contentType
     this
   }
 
-  private implicit var requestCharset = Charset.UTF8
+  private var requestCharset = Charset.UTF8
 
   def charset(charset: Charset.Charset): this.type = {
     requestCharset = charset
     this
   }
 
-  def html(nodeName: String, url: String, method: Method = Method.GET, body: AnyRef = null): this.type = {
+  private var requestMethod = Method.GET
+
+  def method(method: Method): this.type = {
+    requestMethod = method
+    this
+  }
+
+  private var requestBody: AnyRef = null
+
+  def body(body: AnyRef): this.type = {
+    requestBody = body
+    this
+  }
+
+  private[excavator] def htmls(nodeName: String, url: String, fun: this.type => Unit): Unit = {
     this.childNodeName = nodeName
     val formatUrl = HtmlVisitAble.replace(url, data.toMap)
     val userAgent = Excavator.pickUserAgent
     val proxy = Excavator.pickProxy
-    val content = HttpHelper.request(method, formatUrl, body, requestHeader.toMap)(requestContentType, requestCharset, userAgent, proxy)
-    create(this, Jsoup.parse(content))
+    val content = HttpHelper.request(requestMethod, formatUrl, requestBody, requestHeader.toMap)(requestContentType, requestCharset, userAgent, proxy)
+    fun(create(this, Jsoup.parse(content)))
   }
 
-  def htmls(nodeName: String, urls: => Seq[String], method: Method = Method.GET, body: AnyRef = null): ParSeq[this.type] = {
-    urls.par.map {
-      html(nodeName, _, method, body)
-    }.asInstanceOf[ParSeq[this.type]]
+  private[excavator] def htmls(nodeName: String, urls: Seq[String], fun: this.type => Unit): Unit = {
+    urls.par.foreach {
+      htmls(nodeName, _, fun)
+    }
   }
 
 }

@@ -213,6 +213,6 @@ case class GzipDecompressingEntity(entity: HttpEntity) extends HttpEntityWrapper
   }
 }
 
-case class HttpProxy(hostName: String, port: Int, userName: String, password: String)
+case class HttpProxy(hostName: String, port: Int, userName: String = null, password: String = null)
 
 
