@@ -20,6 +20,12 @@ trait DataProcessAble extends ENodeDef {
     this
   }
 
+  def array(name: String, cssQueryFun: Element => Seq[Any]): this.type = {
+    val array = cssQueryFun(element)
+    data += name -> array
+    this
+  }
+
   def json(name: String, jsName: String): this.type = {
     val value = getValueForScript(name)
     if (value != null) {

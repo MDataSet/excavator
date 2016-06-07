@@ -65,13 +65,16 @@ trait ENodeDef extends LazyLogging {
       item =>
         item._2 match {
           case value: String => json.put(item._1, value)
+          case value: JsonNode => json.set(item._1, value)
+          case value: Seq[String] =>
+            val arr = json.putArray(item._1)
+            value.foreach(arr.add)
           case value: Int => json.put(item._1, value)
           case value: Long => json.put(item._1, value)
           case value: Float => json.put(item._1, value)
           case value: Double => json.put(item._1, value)
           case value: Boolean => json.put(item._1, value)
           case value: Short => json.put(item._1, value)
-          case value: JsonNode => json.set(item._1, value)
           case value: BigDecimal => json.put(item._1, value)
           case _ => logger.warn(s"The type [${item._2.getClass.getName}] not support")
         }

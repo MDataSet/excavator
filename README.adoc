@@ -1,6 +1,6 @@
 = MDS Excavator(微数据平台数据采集工具)
 
-image::https://img.shields.io/travis/MDataset/excavator.svg[link="https://travis-ci.org/MDataset/excavator"]
+image::https://img.shields.io/travis/MDataSet/excavator.svg[link="https://travis-ci.org/MDataset/excavator"]
 
 == 特点
 
@@ -11,7 +11,30 @@ image::https://img.shields.io/travis/MDataset/excavator.svg[link="https://travis
 
 == 使用
 
-// TODO
+=== 基础：如果使用4个函数玩转汽车之家数据抓取
+
+[source,scala]
+----
+Excavator.start()
+      .contentType("text/html; charset=gb2312").charset(Charset.GB2312)
+      .go("root", ('A' to 'Z').map("http://www.autohome.com.cn/grade/carhtml/" + _ + ".html"),
+        _.go("brand", "dl",
+          _.text("brandName", "dt")
+            .go("company", "dd",
+              _.text("companyName", ".h3-tit")
+                .go("series", "li:has(h4)",
+                  _.text("seriesName", "h4")
+                    .text("seriesId", _.attr("id").replace("s", ""))
+                    .go("model", "http://car.autohome.com.cn/config/series/{seriesId}.html",
+                      _.json("config", "config", _.get("result").get("paramtypeitems"))
+                        .json("option", "option", _.get("result").get("configtypeitems"))
+                        .process(println)
+                    )
+                )
+            )
+        )
+      )
+----
 
 == License
 

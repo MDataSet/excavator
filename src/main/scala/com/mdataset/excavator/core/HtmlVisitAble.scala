@@ -15,14 +15,14 @@ trait HtmlVisitAble extends ENodeDef {
     this
   }
 
-  private var requestContentType = "text/html; charset=utf-8"
+  private var requestContentType = "text/html; charset=gb2312"
 
   def contentType(contentType: String): this.type = {
     requestContentType = contentType
     this
   }
 
-  private var requestCharset = Charset.UTF8
+  private var requestCharset = Charset.GB2312
 
   def charset(charset: Charset.Charset): this.type = {
     requestCharset = charset
