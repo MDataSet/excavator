@@ -3,7 +3,7 @@ package com.mdataset.excavator
 import java.util.Random
 
 import com.mdataset.excavator.core.ENode
-import com.mdataset.excavator.helper.{HttpProxy, UserAgent}
+import com.mdataset.excavator.http.{HttpProxy, UserAgent}
 
 
 object Excavator {

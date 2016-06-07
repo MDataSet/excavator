@@ -1,8 +1,8 @@
 package com.mdataset.excavator.core
 
 import com.mdataset.excavator.Excavator
-import com.mdataset.excavator.helper.Method.Method
-import com.mdataset.excavator.helper.{Method, _}
+import com.mdataset.excavator.http.Method.Method
+import com.mdataset.excavator.http.{Charset, HttpHelper, Method}
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.jsoup.Jsoup
 
@@ -43,18 +43,31 @@ trait HtmlVisitAble extends ENodeDef {
     this
   }
 
-  private[excavator] def htmls(nodeName: String, url: String, fun: this.type => Unit): Unit = {
+  private var specialClientId: String = null
+
+  def clientId(clientId: String): this.type = {
+    specialClientId = clientId
+    this
+  }
+
+  private[excavator] def html(nodeName: String, url: String, fun: this.type => Unit): Unit = {
     this.childNodeName = nodeName
     val formatUrl = HtmlVisitAble.replace(url, data.toMap)
     val userAgent = Excavator.pickUserAgent
     val proxy = Excavator.pickProxy
-    val content = HttpHelper.request(requestMethod, formatUrl, requestBody, requestHeader.toMap)(requestContentType, requestCharset, userAgent, proxy)
+    val client =
+      if (specialClientId != null) {
+        HttpHelper.getAndAddClientByName(specialClientId, userAgent, proxy)
+      } else {
+        HttpHelper.getAndAddClientByHash(userAgent, proxy)
+      }
+    val content = client.request(requestMethod, formatUrl, requestBody, requestHeader.toMap)(requestContentType, requestCharset)
     fun(create(this, Jsoup.parse(content)))
   }
 
-  private[excavator] def htmls(nodeName: String, urls: Seq[String], fun: this.type => Unit): Unit = {
+  private[excavator] def html(nodeName: String, urls: Seq[String], fun: this.type => Unit): Unit = {
     urls.par.foreach {
-      htmls(nodeName, _, fun)
+      html(nodeName, _, fun)
     }
   }
 

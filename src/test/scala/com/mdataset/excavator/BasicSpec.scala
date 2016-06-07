@@ -1,6 +1,6 @@
 package com.mdataset.excavator
 
-import com.mdataset.excavator.helper.{Charset, HttpProxy, UserAgent}
+import com.mdataset.excavator.http.{Charset, HttpProxy, Method, UserAgent}
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
