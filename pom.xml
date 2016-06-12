@@ -15,8 +15,8 @@
     <name>Data Excavator POM</name>
     <description>数据挖掘机 POM</description>
     <url>https://github.com/MDataSet/excavator</url>
-    <packaging>pom</packaging>
-    <version>1.0.0-beta1</version>
+    <packaging>jar</packaging>
+    <version>1.0.0-SNAPSHOT</version>
 
     <scm>
         <connection>scm:git:git@github.com:MDataSet/excavator.git</connection>
