@@ -28,7 +28,7 @@ object HttpHelper extends LazyLogging {
   }
 
   def getAndAddClientByHash(userAgent: String = UserAgent.IE11, proxy: HttpProxy = null): HttpProcessor = {
-    val hash = (userAgent + proxy.hashCode()).hashCode + ""
+    val hash = (userAgent + (if (proxy != null) proxy.hashCode() else "")).hashCode + ""
     if (!httpClients.contains(hash)) {
       val client = HttpProcessor(userAgent, proxy)
       httpClients += hash -> client
