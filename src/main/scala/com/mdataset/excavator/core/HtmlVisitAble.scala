@@ -36,14 +36,14 @@ trait HtmlVisitAble extends ENodeDef {
     this
   }
 
-  private var requestBody: AnyRef = null
+  private var requestBody: AnyRef = _
 
   def body(body: AnyRef): this.type = {
     requestBody = body
     this
   }
 
-  private var specialClientId: String = null
+  private var specialClientId: String = _
 
   def clientId(clientId: String): this.type = {
     specialClientId = clientId

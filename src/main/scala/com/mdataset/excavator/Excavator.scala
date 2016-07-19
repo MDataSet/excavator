@@ -3,7 +3,7 @@ package com.mdataset.excavator
 import java.util.Random
 
 import com.mdataset.excavator.core.ENode
-import com.mdataset.excavator.http.{HttpProxy, UserAgent}
+import com.mdataset.excavator.http.{HttpHelper, HttpProcessor, HttpProxy, UserAgent}
 
 
 object Excavator {
@@ -32,7 +32,7 @@ object Excavator {
     }
   }
 
-  private var requestProxy: HttpProxy = null
+  private var requestProxy: HttpProxy = _
 
   def proxy(proxy: HttpProxy): this.type = {
     requestProxy = proxy
@@ -56,6 +56,10 @@ object Excavator {
 
   def start(): ENode = {
     new ENode()
+  }
+
+  val getHttpClient: HttpProcessor = {
+    HttpHelper.getAndAddClientByHash(pickUserAgent, pickProxy)
   }
 
 }
