@@ -10,13 +10,25 @@ import scala.collection.JavaConversions._
 trait DataProcessAble extends ENodeDef {
 
   def text(name: String, cssQuery: String): this.type = {
-    data += name -> element.select(cssQuery).text()
+    try {
+      data += name -> element.select(cssQuery).text()
+    } catch {
+      case e: Throwable =>
+        logger.error(s"ele select error,ele:${element.toString},cssQuery:$cssQuery")
+        throw e
+    }
     this
   }
 
   def text(name: String, cssQueryFun: Element => String): this.type = {
-    val text = cssQueryFun(element)
-    data += name -> text
+    try {
+      val text = cssQueryFun(element)
+      data += name -> text
+    } catch {
+      case e: Throwable =>
+        logger.error(s"ele select error,ele:${element.toString},cssQueryFun:$cssQueryFun")
+        throw e
+    }
     this
   }
 
