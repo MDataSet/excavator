@@ -91,7 +91,7 @@ case class HttpProcessor(userAgent: String = UserAgent.IE11, proxy: HttpProxy = 
                       contentType: String, charset: Charset.Charset, retry: Int = 0): String = {
     logger.debug(s"HTTP [${method.getMethod}] request : ${method.getURI}")
     method.setConfig(methodConfig)
-    if (header != null) {
+    if (header != null&&header.nonEmpty) {
       header.foreach(h => method.addHeader(h._1, h._2))
     }
     method.addHeader(HttpHeaders.USER_AGENT, userAgent)

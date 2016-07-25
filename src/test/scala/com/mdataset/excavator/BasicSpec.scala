@@ -1,6 +1,6 @@
 package com.mdataset.excavator
 
-import com.mdataset.excavator.http.{Charset, HttpProxy, Method, UserAgent}
+import com.mdataset.excavator.http.{Charset, HttpProxy, UserAgent}
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -45,6 +45,27 @@ class BasicSpec extends FunSuite with BeforeAndAfter with LazyLogging {
         )
       )
 
+  }
+
+  test("xcar test") {
+    Excavator.start()
+      .go("root", "http://newcar.xcar.com.cn/price/")(
+        _.go("brandContainer", "#img_load_box .container tr")(
+          _.text("brandName", ".column_tit")
+            .go("subBrandContainer", ".column_content")(
+              _.text("subBrandName", ".tit")
+                .go("modelContainer", "ul")(
+                  _.text("modelName", ".item_list")
+                    .text("modelUrl", _.select(".item_list a").attr("href"))
+                    .go("trimPage", "http://newcar.xcar.com.cn{modelUrl}")(
+                      _.go("tirmContainer", ".demio_table_list tr tr")(
+                        _.text("trimName", ".list_version")
+                          .text("trimPrice", ".guide_price")
+                          .process({
+                            d =>
+                              println(d)
+                          }, false))
+                    )))))
   }
 
 }
