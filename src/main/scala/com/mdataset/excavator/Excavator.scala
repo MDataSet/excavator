@@ -10,6 +10,17 @@ object Excavator {
 
   private val rand = new Random(System.currentTimeMillis())
 
+  private[excavator] var poolMaxSize = 500
+  private[excavator] var poolMaxPerSize = 100
+
+  def setPoolMaxSize(maxSize: Int): Unit = {
+    poolMaxSize = maxSize
+  }
+
+  def setPoolMaxPerSize(maxPerSize: Int): Unit = {
+    poolMaxPerSize = maxPerSize
+  }
+
   private var requestUserAgent = UserAgent.IE10
 
   def userAgent(userAgent: String): this.type = {

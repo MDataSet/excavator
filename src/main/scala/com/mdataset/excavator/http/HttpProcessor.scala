@@ -4,6 +4,7 @@ import java.io.File
 import java.net.SocketException
 
 import com.ecfront.common.JsonHelper
+import com.mdataset.excavator.Excavator
 import com.mdataset.excavator.http.Method.Method
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
@@ -13,6 +14,7 @@ import org.apache.http.client.methods.{HttpEntityEnclosingRequestBase, _}
 import org.apache.http.cookie.Cookie
 import org.apache.http.entity.{FileEntity, StringEntity}
 import org.apache.http.impl.client.{BasicCookieStore, BasicCredentialsProvider, CloseableHttpClient, HttpClients}
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager
 import org.apache.http.message.BasicNameValuePair
 import org.apache.http.util.EntityUtils
 import org.apache.http.{HttpHeaders, HttpHost, NameValuePair, NoHttpResponseException}
@@ -21,6 +23,10 @@ import scala.collection.JavaConversions._
 
 case class HttpProcessor(userAgent: String = UserAgent.IE11, proxy: HttpProxy = null) extends LazyLogging {
 
+  private val cm = new PoolingHttpClientConnectionManager()
+  cm.setMaxTotal(Excavator.poolMaxSize)
+  cm.setDefaultMaxPerRoute(Excavator.poolMaxPerSize)
+
   private val cookieStore = new BasicCookieStore()
   private val httpClient: CloseableHttpClient =
     if (proxy != null && proxy.userName != null) {
@@ -28,9 +34,10 @@ case class HttpProcessor(userAgent: String = UserAgent.IE11, proxy: HttpProxy = 
       credProvider.setCredentials(
         new AuthScope(proxy.hostName, proxy.port),
         new UsernamePasswordCredentials(proxy.userName, proxy.password))
-      HttpClients.custom().setDefaultCookieStore(cookieStore).setDefaultCredentialsProvider(credProvider).build()
+      HttpClients.custom().setConnectionManager(cm).setDefaultCookieStore(cookieStore)
+        .setDefaultCredentialsProvider(credProvider).build()
     } else {
-      HttpClients.custom().setDefaultCookieStore(cookieStore).build()
+      HttpClients.custom().setConnectionManager(cm).setDefaultCookieStore(cookieStore).build()
     }
 
   private val methodConfig =
@@ -91,7 +98,7 @@ case class HttpProcessor(userAgent: String = UserAgent.IE11, proxy: HttpProxy = 
                       contentType: String, charset: Charset.Charset, retry: Int = 0): String = {
     logger.debug(s"HTTP [${method.getMethod}] request : ${method.getURI}")
     method.setConfig(methodConfig)
-    if (header != null&&header.nonEmpty) {
+    if (header != null && header.nonEmpty) {
       header.foreach(h => method.addHeader(h._1, h._2))
     }
     method.addHeader(HttpHeaders.USER_AGENT, userAgent)
@@ -115,8 +122,9 @@ case class HttpProcessor(userAgent: String = UserAgent.IE11, proxy: HttpProxy = 
       }
       method.asInstanceOf[HttpEntityEnclosingRequestBase].setEntity(entity)
     }
+    var response: CloseableHttpResponse = null
     try {
-      val response = httpClient.execute(method)
+      response = httpClient.execute(method)
       EntityUtils.toString(response.getEntity, charset.toString)
     } catch {
       case e if e.getClass == classOf[SocketException] || e.getClass == classOf[NoHttpResponseException] =>
@@ -132,6 +140,10 @@ case class HttpProcessor(userAgent: String = UserAgent.IE11, proxy: HttpProxy = 
       case e: Exception =>
         logger.warn(s"HTTP [${method.getMethod}] request : ${method.getURI} ERROR.", e)
         throw e
+    } finally {
+      if (response != null) {
+        response.close()
+      }
     }
   }
 
