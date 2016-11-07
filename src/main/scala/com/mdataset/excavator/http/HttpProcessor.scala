@@ -7,6 +7,7 @@ import com.ecfront.common.JsonHelper
 import com.mdataset.excavator.Excavator
 import com.mdataset.excavator.http.Method.Method
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import org.apache.http._
 import org.apache.http.auth.{AuthScope, UsernamePasswordCredentials}
 import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.entity.UrlEncodedFormEntity
@@ -17,7 +18,6 @@ import org.apache.http.impl.client.{BasicCookieStore, BasicCredentialsProvider, 
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager
 import org.apache.http.message.BasicNameValuePair
 import org.apache.http.util.EntityUtils
-import org.apache.http.{HttpHeaders, HttpHost, NameValuePair, NoHttpResponseException}
 
 import scala.collection.JavaConversions._
 
@@ -127,7 +127,9 @@ case class HttpProcessor(userAgent: String = UserAgent.IE11, proxy: HttpProxy = 
       response = httpClient.execute(method)
       EntityUtils.toString(response.getEntity, charset.toString)
     } catch {
-      case e if e.getClass == classOf[SocketException] || e.getClass == classOf[NoHttpResponseException] =>
+      case e if e.getClass == classOf[SocketException]
+        || e.getClass == classOf[NoHttpResponseException]
+        || e.getClass == classOf[MalformedChunkCodingException] =>
         // 同络错误重试5次
         if (retry <= 5) {
           Thread.sleep(500)
